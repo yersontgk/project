@@ -1,0 +1,1 @@
+// JavaScript para la funcionalidad de la barra lateral

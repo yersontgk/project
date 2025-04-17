@@ -1,0 +1,1 @@
+// JavaScript para validaciones de asistencia
