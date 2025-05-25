@@ -56,4 +56,17 @@ class Asistencia {
 
         return $stmt->execute();
     }
+
+    public function readByDateAndMatricula($fecha, $id_matricula) {
+        $query = "SELECT * FROM " . $this->table_name . "
+                  WHERE fecha = ? AND id_matricula = ? AND estado = true
+                  LIMIT 1";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $fecha);
+        $stmt->bindParam(2, $id_matricula);
+        $stmt->execute();
+
+        return $stmt;
+    }
 }

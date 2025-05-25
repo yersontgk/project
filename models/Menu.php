@@ -26,14 +26,31 @@ class Menu {
         $stmt->bindParam(3, $this->fecha);
         $stmt->bindParam(4, $this->created_by);
 
-        return $stmt->execute();
+        $result = $stmt->execute();
+        if ($result) {
+            $this->id_menu = $this->conn->lastInsertId();
+        }
+        return $result;
     }
 
     public function read() {
         $query = "SELECT m.*, u.nombre_completo as creado_por 
                  FROM " . $this->table_name . " m
                  LEFT JOIN usuarios u ON m.created_by = u.id
-                 WHERE m.estado = true 
+                 WHERE m.estado = 1 
+                 ORDER BY m.fecha DESC";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+
+        return $stmt;
+    }
+
+    public function readDisabled() {
+        $query = "SELECT m.*, u.nombre_completo as creado_por 
+                 FROM " . $this->table_name . " m
+                 LEFT JOIN usuarios u ON m.created_by = u.id
+                 WHERE m.estado = 0 
                  ORDER BY m.fecha DESC";
 
         $stmt = $this->conn->prepare($query);
@@ -46,10 +63,24 @@ class Menu {
         $query = "SELECT m.*, u.nombre_completo as creado_por 
                  FROM " . $this->table_name . " m
                  LEFT JOIN usuarios u ON m.created_by = u.id
-                 WHERE m.fecha = ? AND m.estado = true";
+                 WHERE m.fecha = ? AND m.estado = 1";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(1, $fecha);
+        $stmt->execute();
+
+        return $stmt;
+    }
+
+    public function readById($id_menu) {
+        $query = "SELECT m.*, u.nombre_completo as creado_por 
+                 FROM " . $this->table_name . " m
+                 LEFT JOIN usuarios u ON m.created_by = u.id
+                 WHERE m.id_menu = ? AND m.estado = 1
+                 LIMIT 1";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $id_menu);
         $stmt->execute();
 
         return $stmt;
@@ -72,7 +103,18 @@ class Menu {
 
     public function delete() {
         $query = "UPDATE " . $this->table_name . "
-                SET estado = false
+                SET estado = 0
+                WHERE id_menu = ?";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $this->id_menu);
+
+        return $stmt->execute();
+    }
+
+    public function enable() {
+        $query = "UPDATE " . $this->table_name . "
+                SET estado = 1
                 WHERE id_menu = ?";
 
         $stmt = $this->conn->prepare($query);

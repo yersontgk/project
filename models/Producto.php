@@ -70,12 +70,35 @@ class Producto {
         return $stmt->execute();
     }
 
+    public function getStockById($id_producto) {
+        $query = "SELECT stock FROM " . $this->table_name . " WHERE id_producto = ? LIMIT 1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $id_producto);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ? (float)$row['stock'] : null;
+    }
+
     public function getBajoStock() {
         $query = "SELECT p.*, u.nombre as unidad, u.simbolo 
                  FROM " . $this->table_name . " p
                  LEFT JOIN unidad u ON p.id_unidad = u.id_unidad
                  WHERE p.estado = true AND p.stock <= p.stock_minimo
                  ORDER BY p.nombre";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+
+        return $stmt;
+    }
+
+    public function getProductosSinGramaje() {
+        $query = "SELECT p.*, u.nombre as unidad, u.simbolo
+                  FROM " . $this->table_name . " p
+                  LEFT JOIN unidad u ON p.id_unidad = u.id_unidad
+                  LEFT JOIN gramaje g ON p.id_producto = g.id_producto
+                  WHERE p.estado = true AND g.id_gramaje IS NULL
+                  ORDER BY p.nombre";
 
         $stmt = $this->conn->prepare($query);
         $stmt->execute();

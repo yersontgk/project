@@ -15,13 +15,11 @@ class MenuProducto {
     }
 
     public function create() {
-        $query = "INSERT INTO " . $this->table_name . "
-                (id_menu, id_producto, cantidad_por_plato)
-                VALUES (?, ?, ?)
-                ON CONFLICT (id_menu, id_producto) 
-                DO UPDATE SET cantidad_por_plato = EXCLUDED.cantidad_por_plato,
-                             updated_at = CURRENT_TIMESTAMP
-                RETURNING id_menu_producto";
+        $query = "INSERT INTO " . $this->table_name . " (id_menu, id_producto, cantidad_por_plato)
+                  VALUES (?, ?, ?)
+                  ON DUPLICATE KEY UPDATE 
+                    cantidad_por_plato = VALUES(cantidad_por_plato),
+                    updated_at = CURRENT_TIMESTAMP";
 
         $stmt = $this->conn->prepare($query);
 
@@ -29,21 +27,14 @@ class MenuProducto {
         $stmt->bindParam(2, $this->id_producto);
         $stmt->bindParam(3, $this->cantidad_por_plato);
 
-        if($stmt->execute()) {
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            $this->id_menu_producto = $row['id_menu_producto'];
-            return true;
-        }
-        return false;
+        return $stmt->execute();
     }
 
     public function readByMenu($id_menu) {
-        $query = "SELECT mp.*, p.nombre as producto_nombre, u.simbolo as unidad,
-                        g.gramaje_por_plato
+$query = "SELECT mp.*, p.nombre as producto_nombre, p.stock, u.simbolo as unidad
                  FROM " . $this->table_name . " mp
                  INNER JOIN producto p ON mp.id_producto = p.id_producto
                  INNER JOIN unidad u ON p.id_unidad = u.id_unidad
-                 LEFT JOIN gramaje g ON p.id_producto = g.id_producto
                  WHERE mp.id_menu = ?
                  ORDER BY p.nombre";
 

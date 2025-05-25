@@ -17,10 +17,9 @@ class Gramaje {
         $query = "INSERT INTO " . $this->table_name . "
                 (id_producto, gramaje_por_plato)
                 VALUES (?, ?)
-                ON CONFLICT (id_producto) 
-                DO UPDATE SET gramaje_por_plato = EXCLUDED.gramaje_por_plato,
-                             updated_at = CURRENT_TIMESTAMP
-                RETURNING id_gramaje";
+                ON DUPLICATE KEY UPDATE 
+                    gramaje_por_plato = VALUES(gramaje_por_plato),
+                    updated_at = CURRENT_TIMESTAMP";
 
         $stmt = $this->conn->prepare($query);
 
@@ -28,8 +27,8 @@ class Gramaje {
         $stmt->bindParam(2, $this->gramaje_por_plato);
 
         if($stmt->execute()) {
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            $this->id_gramaje = $row['id_gramaje'];
+            // Optionally, fetch last inserted id_gramaje if needed
+            // $this->id_gramaje = $this->conn->lastInsertId();
             return true;
         }
         return false;
