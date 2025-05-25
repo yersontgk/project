@@ -1,0 +1,26 @@
+.card {
+    margin-bottom: 2rem;
+}
+.calculo-gramaje {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+}
+.producto-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid #dee2e6;
+}
+.producto-row:last-child {
+    border-bottom: none;
+}
+.header-row {
+    font-weight: bold;
+    background-color: #f8f9fa;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+}

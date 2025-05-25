@@ -1,0 +1,12 @@
+.login-container {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 2rem;
+}
+.login-container .card h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+.btn-primary {
+    width: 100%;
+}

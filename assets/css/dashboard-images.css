@@ -1,0 +1,76 @@
+/* Styles for clickable image grid on dashboard */
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+    padding: 1rem 0;
+}
+
+.dashboard-grid a {
+    display: block;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgb(0 0 0 / 0.1);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+    background-color: #fff;
+    text-align: center;
+    position: relative;
+}
+
+.dashboard-grid a:hover {
+    box-shadow: 0 8px 16px rgb(0 0 0 / 0.2);
+    transform: translateY(-5px);
+}
+
+.dashboard-grid img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 12px;
+    transition: transform 0.3s ease;
+}
+
+.dashboard-grid a:hover img {
+    transform: scale(1.05);
+}
+
+.dashboard-grid .image-title {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: rgba(15, 118, 110, 0.8);
+    color: white;
+    padding: 0.5rem 0;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border-radius: 0 0 12px 12px;
+    user-select: none;
+}
+
+/* New styles for description overlay on hover */
+
+.dashboard-grid .image-description {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 2.5rem; /* leave space for title */
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    opacity: 0;
+    padding: 1rem;
+    font-size: 0.95rem;
+    border-radius: 12px 12px 0 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    user-select: none;
+}
+
+.dashboard-grid a:hover .image-description {
+    opacity: 1;
+}

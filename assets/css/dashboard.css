@@ -1,0 +1,263 @@
+/* Dashboard specific styles */
+/* Slider dots container */
+.slider-dots {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 5;
+}
+
+/* Individual dot style */
+.slider-dot {
+    width: 30px;
+    height: 4px;
+    background-color: rgba(158, 158, 158, 0.363);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Active dot style */
+.slider-dot.active {
+    background-color: white;
+}
+
+.dashboard-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    font-size: 16px; /* Base font size */
+}
+
+.dashboard-layout {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+}
+
+/* Slider / Carousel */
+
+.slider {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: none;
+    margin-bottom: 0;
+    width: 450px;
+    height: 450px;
+    background-color: #e0e7ff; /* light blue background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex-shrink: 0;
+}
+
+/* Background circles container */
+.background-circles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 0;
+}
+
+/* Individual circles */
+.background-circles .circle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.3;
+    transition: all 0.8s ease;
+}
+
+/* Example circle styles */
+.background-circles .circle1 {
+    width: 150px;
+    height: 150px;
+    background-color: #0f766e;
+    top: 20%;
+    left: 10%;
+}
+
+.background-circles .circle2 {
+    width: 100px;
+    height: 100px;
+    background-color: #2563eb;
+    top: 60%;
+    left: 60%;
+}
+
+/* Illumination overlay */
+.illumination-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    border-radius: 12px;
+    mix-blend-mode: screen;
+    transition: background-color 0.5s ease;
+    z-index: 1;
+}
+
+/* Slider slides */
+
+.slider-slide {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+    color: #1e293b;
+    padding: 2rem 3rem;
+    box-sizing: border-box;
+    z-index: 2;
+    background: transparent;
+    border-radius: 12px;
+    max-width: 100%;
+    font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.slider-slide.active {
+    opacity: 1;
+    position: relative;
+    pointer-events: auto;
+    transform: translateX(0);
+}
+
+.slider-content h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #0f766e;
+    font-weight: 700;
+}
+
+.slider-content p {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    color: #334155;
+}
+
+.btn-link {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: white;
+    background-color: #0f766e;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    padding: 0.5rem 1rem;
+    width: fit-content;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+}
+
+.btn-link:hover {
+    background-color: #115e59;
+    color: white;
+}
+
+/* New button style for primary buttons */
+.btn-primary {
+    background-color: #0f766e;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+    width: fit-content;
+}
+
+.btn-primary:hover {
+    background-color: #115e59;
+}
+
+/* Slider navigation buttons */
+
+.slider-nav {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    pointer-events: all;
+    z-index: 4;
+    padding: 0 1rem;
+}
+
+.slider-nav button {
+    background: #0f766e;
+    border: none;
+    color: white;
+    font-size: 1.75rem;
+    padding: 0.6rem 0.9rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    box-shadow: 0 2px 6px rgba(15, 118, 110, 0.5);
+}
+
+.slider-nav button:hover {
+    background: #115e59;
+}
+
+/* Character image */
+
+.slider-character {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 300px;
+    height: 450px;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.slider-character img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Responsive */
+
+@media (max-width: 900px) {
+    .dashboard-layout {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .slider {
+        width: 100%;
+        height: 300px;
+        border-radius: 12px;
+    }
+
+    .slider-character {
+        position: relative;
+        width: 100%;
+        height: 200px;
+        margin-top: 1rem;
+    }
+}
