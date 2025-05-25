@@ -1,0 +1,80 @@
+Este proyecto es un Sistema de Gestión Integral para Comedor Escolar, desarrollado principalmente con PHP y MySQL para el backend, y con tecnologías web modernas para el frontend, incluyendo CSS, JavaScript y React con TypeScript.
+
+A continuación, se presenta una explicación completa y detallada del proyecto:
+
+Descripción General:
+El sistema está diseñado para gestionar todas las operaciones relacionadas con un comedor escolar, facilitando la administración de usuarios, control de asistencia, planificación de menús, cálculo automático de gramajes, gestión de inventario y generación de reportes. La interfaz es moderna y responsiva, permitiendo su uso en diferentes dispositivos.
+
+Tecnologías Utilizadas:
+
+Backend: PHP 7.4+, MySQL 5.7+.
+Frontend: HTML, CSS (con Tailwind CSS), JavaScript, React con TypeScript.
+Herramientas: XAMPP para desarrollo local, Supabase para migraciones de base de datos.
+Control de versiones con Git.
+Estructura del Proyecto:
+assets/: Contiene recursos estáticos como CSS, JS e imágenes.
+config/: Archivos de configuración, incluyendo conexión a base de datos y esquema SQL.
+controllers/: Controladores PHP que gestionan la lógica de negocio para diferentes módulos (asistencia, menú, inventario, reportes, usuarios, etc.).
+models/: Modelos PHP que representan las entidades de la base de datos y manejan la interacción con ella.
+views/: Vistas PHP que conforman la interfaz de usuario para cada módulo.
+src/: Código frontend en React/TypeScript para funcionalidades dinámicas y modernas.
+supabase/migrations/: Scripts para migraciones y modificaciones de la base de datos.
+Funcionalidades Principales:
+Gestión de Usuarios: Control de acceso con roles (administrador, usuario base, cocinero), autenticación segura y manejo de permisos.
+Control de Asistencia: Registro y actualización de asistencia diaria por grado y sección, con diferenciación por género.
+Planificación de Menús: Creación, actualización y gestión de menús diarios con productos asociados.
+Cálculo Automático de Gramaje: Cálculo y registro de gramajes por plato para optimizar la preparación de alimentos.
+Gestión de Inventario: Control detallado de productos e insumos, con registro de ingresos y consumos, control de stock mínimo y alertas.
+Registro de Platos Servidos: Control de platos servidos y devueltos para un mejor análisis del consumo.
+Generación de Reportes: Reportes detallados sobre asistencia, consumo, menús populares, estadísticas generales y casos especiales (como usuarios vulnerables).
+Seguridad: Autenticación, contraseñas hasheadas, validación de formularios, protección contra SQL Injection y control de acceso basado en roles.
+Flujo General de la Aplicación: El usuario accede al sistema mediante autenticación. Dependiendo de su rol, puede gestionar usuarios, registrar asistencias, planificar menús, controlar inventario o generar reportes. Los datos se almacenan en una base MySQL y se gestionan mediante controladores y modelos PHP. La interfaz combina vistas PHP con componentes React para una experiencia dinámica.
+En resumen, este proyecto es una solución completa y modular para la gestión eficiente de un comedor escolar, integrando múltiples aspectos administrativos y operativos en una plataforma web segura y fácil de usar.
+
+
+
+Explicación detallada de los archivos en las carpetas controllers, models y views:
+
+Carpeta controllers:
+AsistenciaController.php: Gestiona la lógica para el registro y consulta de asistencias de estudiantes y otros usuarios, incluyendo actualización y registro de matrículas.
+AuthController.php: Controla la autenticación de usuarios, manejo de sesiones y seguridad de acceso.
+ConsumoController.php: Administra el registro y consulta del consumo de insumos y productos en el comedor.
+gramaje_api.php: Provee una API para operaciones relacionadas con el cálculo y gestión de gramajes por plato.
+GramajeController.php: Controla la lógica para el cálculo, registro y actualización de gramajes en el sistema.
+IngresoController.php: Gestiona el ingreso de insumos y productos al inventario.
+InventarioController.php: Controla la gestión del inventario, incluyendo productos, stock, ingresos y consumos.
+MatriculaLimiteController.php: Administra los límites de matrícula por grado o sección.
+MenuController.php: Gestiona la creación, actualización, eliminación y consulta de menús y sus productos asociados.
+MenuProductoController.php: Controla la relación entre menús y productos, permitiendo asignar productos a menús específicos.
+PlatosServidosController.php: Registra y consulta los platos servidos y devueltos en el comedor.
+ReporteController.php: Genera reportes y estadísticas integrales basadas en datos de asistencia, consumo, menús y usuarios.
+UserController.php: Administra la gestión de usuarios, incluyendo creación, actualización, roles y permisos.
+Carpeta models:
+Asistencia.php: Modelo que representa la tabla de asistencias y maneja operaciones CRUD relacionadas.
+Consumo.php: Modelo para la tabla de consumos generales en el sistema.
+ConsumoAsistencia.php: Modelo específico para consumos relacionados con la asistencia.
+ConsumoDetalle.php: Detalles de cada consumo, vinculando productos y cantidades.
+Gramaje.php: Modelo para el cálculo y almacenamiento de gramajes por plato.
+IngresoDetalle.php: Detalles de los ingresos de insumos o productos.
+IngresoInsumo.php: Modelo para el registro de ingresos al inventario.
+Matricula.php: Representa las matrículas de usuarios, con detalles como grado, sección y tipo.
+MatriculaLimite.php: Modelo para los límites de matrícula permitidos.
+Menu.php: Modelo que representa los menús del comedor.
+MenuProducto.php: Relación entre menús y productos.
+PlatosServidos.php: Modelo para el registro de platos servidos y devueltos.
+Producto.php: Representa los productos e insumos del inventario.
+Usuario.php: Modelo para la gestión de usuarios, roles y credenciales.
+Carpeta views:
+asistencia.php: Vista para la gestión y visualización de asistencias.
+dashboard.php: Vista principal o panel de control del sistema.
+gramaje.php: Vista para la gestión y visualización de gramajes.
+inventario.php: Vista para la gestión del inventario de productos e insumos.
+login.php: Vista para el inicio de sesión de usuarios.
+logout.php: Vista o script para cerrar sesión.
+menu.php: Vista para la gestión y visualización de menús.
+platos_servidos.php: Vista para registrar y consultar platos servidos y devueltos.
+reportes.php: Vista para la generación y visualización de reportes y estadísticas.
+usuarios.php: Vista para la gestión de usuarios y roles.
+gramaje/: Carpeta con vistas específicas para edición e índice de gramajes.
+partials/: Carpeta con vistas parciales reutilizables, como la barra lateral y botones de navegación.
+Esta explicación cubre la función y propósito de cada archivo en las carpetas principales del proyecto, proporcionando una visión clara y detallada de la arquitectura y funcionalidades del sistema.

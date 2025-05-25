@@ -1,10 +1,10 @@
 <?php
-require_once __DIR__ . '/../../controllers/AuthController.php';
-require_once __DIR__ . '/../../controllers/MenuController.php';
-require_once __DIR__ . '/../../controllers/MenuProductoController.php';
-require_once __DIR__ . '/../../controllers/AsistenciaController.php';
-require_once __DIR__ . '/../../controllers/ConsumoController.php';
-require_once __DIR__ . '/../../controllers/InventarioController.php';
+require_once __DIR__ . '/../controllers/AuthController.php';
+require_once __DIR__ . '/../controllers/MenuController.php';
+require_once __DIR__ . '/../controllers/MenuProductoController.php';
+require_once __DIR__ . '/../controllers/AsistenciaController.php';
+require_once __DIR__ . '/../controllers/ConsumoController.php';
+require_once __DIR__ . '/../controllers/InventarioController.php';
 
 $auth = new AuthController();
 $menuController = new MenuController();
@@ -18,12 +18,16 @@ if (!$auth->isLoggedIn()) {
     exit();
 }
 
-$fecha = isset($_GET['fecha']) ? $_GET['fecha'] : date('Y-m-d');
+$fecha = isset($_GET['fecha']) ? DateTime::createFromFormat('Y-m-d', $_GET['fecha'])->format('Y-m-d') : date('Y-m-d');
+if ($fecha > date('Y-m-d')) {
+    $fecha = date('Y-m-d');
+}
 
-$consumoMenu = $consumoController->getConsumoWithMenuByDate($fecha)->fetch(PDO::FETCH_ASSOC);
+// Get menu del día
+$consumoMenu = $consumoController->getConsumoWithMenuByDateAndUser($fecha, $_SESSION['user_id'])->fetch(PDO::FETCH_ASSOC);
 
 // Get asistencia total
-require_once __DIR__ . '/../../controllers/PlatosServidosController.php';
+require_once __DIR__ . '/../controllers/PlatosServidosController.php';
 $platosServidosController = new PlatosServidosController();
 
 $totalPlatosServidos = 0;
@@ -46,109 +50,8 @@ if ($consumoMenu) {
 </head>
 </head>
 <body>
-<nav class="sidebar">
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-    const sidebar = document.querySelector('.sidebar');
-    const mainContent = document.querySelector('.main-content');
-    const toggleButton = document.querySelector('.sidebar-toggle');
-    const menuTexts = document.querySelectorAll('.menu-text');
-
-    function toggleSidebar() {
-        sidebar.classList.toggle('collapsed');
-        mainContent.classList.toggle('expanded');
-        
-        if (sidebar.classList.contains('collapsed')) {
-            menuTexts.forEach(text => {
-                text.style.display = 'none';
-            });
-        } else {
-            setTimeout(() => {
-                menuTexts.forEach(text => {
-                    text.style.display = 'block';
-                });
-            }, 100);
-        }
-    }
-
-    if (toggleButton) {
-        toggleButton.addEventListener('click', toggleSidebar);
-    }
-});
-    </script>
-    <div class="sidebar-header">
-            <h3 class="menu-text">Comedor Escolar</h3>
-            <button class="sidebar-toggle">☰</button>
-        </div>
-        <ul class="sidebar-menu">
-            <li>
-                <a href="../dashboard.php">
-                    <span>📊</span>
-                    <span class="menu-text">Inicio</span>
-                </a>
-            </li>
-            <?php if($auth->checkRole(['admin', 'base'])): ?>
-            <li>
-                <a href="../asistencia.php">
-                    <span>📋</span>
-                    <span class="menu-text">Asistencia</span>
-                </a>
-            </li>
-            <?php endif; ?>
-            <?php if($auth->checkRole(['admin', 'base', 'cocinero'])): ?>
-            <li>
-                <a href="../platos_servidos.php">
-                    <span>👩‍👩‍👦‍👦</span>
-                    <span class="menu-text">Platos Servidos</span>
-                </a>
-            </li>
-            <li>
-                <a href="../menu.php">
-                    <span>🍽️</span>
-                    <span class="menu-text">Menú</span>
-                </a>
-            </li>
-            <?php endif; ?>
-            <?php if($auth->checkRole(['admin', 'cocinero'])): ?>
-            <li>
-                <a href="../inventario.php">
-                    <span>📦</span>
-                    <span class="menu-text">Inventario</span>
-                </a>
-            </li>
-            <li>
-                <a href="../gramaje/index.php">
-                    <span>⚖️</span>
-                    <span class="menu-text">Gramaje</span>
-                </a>
-            </li>
-            <?php endif; ?>
-            <?php if($auth->checkRole(['admin'])): ?>
-            <li>
-                <a href="../reportes.php">
-                    <span>📊</span>
-                    <span class="menu-text">Reportes</span>
-                </a>
-            </li>
-            <?php endif; ?>
-            <?php if($auth->checkRole(['admin'])): ?>
-            <li>
-                <a href="../usuarios.php">
-                    <span>👥</span>
-                    <span class="menu-text">Usuarios</span>
-                </a>
-            </li>
-            <?php endif; ?>
-            <li>
-                <a href="../logout.php">
-                    <span>🚪</span>
-                    <span class="menu-text">Cerrar Sesión</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-
-    <?php include '../partials/navigation_buttons.php'; ?>
+    <?php include 'partials/sidebar.php'; ?>
+    <?php include 'partials/navigation_buttons.php'; ?>
 
     <main class="main-content">
         <div class="card">
@@ -157,7 +60,7 @@ if ($consumoMenu) {
             <form method="GET" class="mb-4">
                 <div class="form-group">
                     <label for="fecha">Seleccionar Fecha:</label>
-                    <input type="date" id="fecha" name="fecha" value="<?php echo $fecha; ?>" max="<?php echo date('Y-m-d'); ?>" class="form-control" onchange="this.form.submit()" style="max-width: 200px;">
+<input type="date" id="fecha" name="fecha" value="<?php echo $fecha; ?>" max="<?php echo date('Y-m-d'); ?>" class="form-control" onchange="this.form.submit()" style="max-width: 200px;">
                 </div>
             </form>
 
@@ -197,7 +100,7 @@ $cantidadNecesaria = $producto['cantidad_por_plato'] * $totalPlatosServidos;
                     </div>
                     <?php endwhile; ?>
                 </div>
-                <button id="restar-insumos-btn" class="btn btn-primary mt-3" <?php if($auth->checkRole(['base'])) echo 'disabled'; ?>>Restar insumos</button>
+                <button id="restar-insumos-btn" class="btn btn-primary mt-3">Restar insumos</button>
             <?php else: ?>
                 <div class="alert alert-warning">
                     No hay un menú seleccionado para la fecha seleccionada. Por favor, seleccione un menú en el Dashboard.

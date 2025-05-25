@@ -14,45 +14,51 @@ $mensaje = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action'])) {
-        switch ($_POST['action']) {
-            case 'create':
-                $nombre = $_POST['nombre'];
-                $stock = $_POST['stock'];
-                $stock_minimo = $_POST['stock_minimo'];
-                $id_unidad = $_POST['id_unidad'];
+        // Restrict modifications for 'base' role
+        if ($auth->checkRole(['base'])) {
+            $mensaje = '<div class="alert alert-danger">No tiene permisos para modificar el inventario.</div>';
+        } else {
+            switch ($_POST['action']) {
+                case 'create':
+                    $nombre = $_POST['nombre'];
+                    $stock = $_POST['stock'];
+                    $stock_minimo = $_POST['stock_minimo'];
+                    $id_unidad = $_POST['id_unidad'];
+                    // Removed gramaje handling
+                    if ($inventarioController->createProduct($nombre, $stock, $stock_minimo, $id_unidad)) {
+                        $id_producto = $inventarioController->getLastInsertedId();
+                        $mensaje = '<div class="alert alert-success">Producto creado correctamente</div>';
+                    } else {
+                        $mensaje = '<div class="alert alert-danger">Error al crear el producto</div>';
+                    }
+                    break;
 
-                if ($inventarioController->createProduct($nombre, $stock, $stock_minimo, $id_unidad)) {
-                    $mensaje = '<div class="alert alert-success">Producto creado correctamente</div>';
-                } else {
-                    $mensaje = '<div class="alert alert-danger">Error al crear el producto</div>';
-                }
-                break;
+                case 'update':
+                    $id_producto = $_POST['id_producto'];
+                    $nombre = $_POST['nombre'];
+                    $stock = $_POST['stock'];
+                    $stock_minimo = $_POST['stock_minimo'];
+                    $id_unidad = $_POST['id_unidad'];
+                    // Removed gramaje handling
+                    if ($inventarioController->updateProduct($id_producto, $nombre, $stock, $stock_minimo, $id_unidad)) {
+                        $mensaje = '<div class="alert alert-success">Producto actualizado correctamente</div>';
+                    } else {
+                        $mensaje = '<div class="alert alert-danger">Error al actualizar el producto</div>';
+                    }
+                    break;
 
-            case 'update':
-                $id_producto = $_POST['id_producto'];
-                $nombre = $_POST['nombre'];
-                $stock = $_POST['stock'];
-                $stock_minimo = $_POST['stock_minimo'];
-                $id_unidad = $_POST['id_unidad'];
+                case 'updateStock':
+                    $id_producto = $_POST['id_producto'];
+                    $cantidad = $_POST['cantidad'];
+                    $tipo = $_POST['tipo'];
 
-                if ($inventarioController->updateProduct($id_producto, $nombre, $stock, $stock_minimo, $id_unidad)) {
-                    $mensaje = '<div class="alert alert-success">Producto actualizado correctamente</div>';
-                } else {
-                    $mensaje = '<div class="alert alert-danger">Error al actualizar el producto</div>';
-                }
-                break;
-
-            case 'updateStock':
-                $id_producto = $_POST['id_producto'];
-                $cantidad = $_POST['cantidad'];
-                $tipo = $_POST['tipo'];
-
-                if ($inventarioController->updateStock($id_producto, $cantidad, $tipo === 'ingreso')) {
-                    $mensaje = '<div class="alert alert-success">Stock actualizado correctamente</div>';
-                } else {
-                    $mensaje = '<div class="alert alert-danger">Error al actualizar el stock</div>';
-                }
-                break;
+                    if ($inventarioController->updateStock($id_producto, $cantidad, $tipo === 'ingreso')) {
+                        $mensaje = '<div class="alert alert-success">Stock actualizado correctamente</div>';
+                    } else {
+                        $mensaje = '<div class="alert alert-warning">No es posible reducir el stock por debajo de cero</div>';
+                    }
+                    break;
+            }
         }
     }
 }
@@ -76,6 +82,7 @@ $productosBajoStock = $inventarioController->getProductosBajoStock();
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
         }
         .modal-content {
             background-color: white;
@@ -84,11 +91,15 @@ $productosBajoStock = $inventarioController->getProductosBajoStock();
             border-radius: 5px;
             width: 80%;
             max-width: 500px;
+            position: relative;
         }
         .alert-warning {
             background-color: #fff3cd;
             color: #856404;
             border: 1px solid #ffeeba;
+            padding: 1rem;
+            border-radius: 0.25rem;
+            margin-bottom: 1rem;
         }
         .stock-warning {
             color: #dc3545;
@@ -118,22 +129,8 @@ $productosBajoStock = $inventarioController->getProductosBajoStock();
     </style>
 </head>
 <body>
-    <nav class="sidebar">
-        <div class="sidebar-header">
-            <h3>Comedor Escolar</h3>
-        </div>
-        <ul class="sidebar-menu">
-            <li><a href="dashboard.php">Dashboard</a></li>
-            <li><a href="asistencia.php">Asistencia</a></li>
-            <li><a href="menu.php">Menú</a></li>
-            <li><a href="inventario.php">Inventario</a></li>
-            <li><a href="reportes.php">Reportes</a></li>
-            <?php if($auth->checkRole(['admin'])): ?>
-                <li><a href="usuarios.php">Usuarios</a></li>
-            <?php endif; ?>
-            <li><a href="logout.php">Cerrar Sesión</a></li>
-        </ul>
-    </nav>
+    <?php include 'partials/sidebar.php'; ?>
+    <?php include 'partials/navigation_buttons.php'; ?>
 
     <main class="main-content">
         <div class="card">
@@ -166,23 +163,29 @@ $productosBajoStock = $inventarioController->getProductosBajoStock();
                 </div>
             <?php endif; ?>
 
+            <?php if(!$auth->checkRole(['base'])): ?>
             <button type="button" class="btn btn-primary mb-4" onclick="showCreateModal()">
                 Crear Nuevo Producto
             </button>
+            <?php endif; ?>
 
-            <table class="table">
+            <input type="text" id="searchInput" placeholder="Buscar producto..." class="form-control mb-3" />
+
+            <table class="table" id="productosTable">
                 <thead>
                     <tr>
                         <th>Nombre</th>
                         <th>Stock</th>
                         <th>Stock Mínimo</th>
                         <th>Unidad</th>
+                            <!-- Removed Gramaje por Plato column -->
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php while ($producto = $productos->fetch(PDO::FETCH_ASSOC)): ?>
+                    <?php while ($producto = $productos->fetch(PDO::FETCH_ASSOC)): 
+                        ?>
                         <tr>
                             <td><?php echo htmlspecialchars($producto['nombre']); ?></td>
                             <td><?php echo $producto['stock'] . ' ' . $producto['simbolo']; ?></td>
@@ -196,6 +199,7 @@ $productosBajoStock = $inventarioController->getProductosBajoStock();
                                 <?php endif; ?>
                             </td>
                             <td>
+                                <?php if(!$auth->checkRole(['base'])): ?>
                                 <button type="button" class="btn btn-primary" 
                                         onclick="showEditModal(
                                             '<?php echo $producto['id_producto']; ?>',
@@ -210,6 +214,14 @@ $productosBajoStock = $inventarioController->getProductosBajoStock();
                                         onclick="showStockModal('<?php echo $producto['id_producto']; ?>')">
                                     Actualizar Stock
                                 </button>
+                                <?php else: ?>
+                                <button type="button" class="btn btn-primary" disabled>
+                                    Editar
+                                </button>
+                                <button type="button" class="btn btn-secondary" disabled>
+                                    Actualizar Stock
+                                </button>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endwhile; ?>
@@ -227,29 +239,31 @@ $productosBajoStock = $inventarioController->getProductosBajoStock();
                 
                 <div class="form-group">
                     <label for="nombre">Nombre:</label>
-                    <input type="text" id="nombre" name="nombre" class="form-control" required>
+                <input type="text" id="nombre" name="nombre" class="form-control" required <?php if($auth->checkRole(['base'])) echo 'readonly'; ?>>
                 </div>
 
                 <div class="form-group">
                     <label for="stock">Stock Inicial:</label>
-                    <input type="number" id="stock" name="stock" class="form-control" step="0.01" required>
+                <input type="number" id="stock" name="stock" class="form-control" step="0.01" required <?php if($auth->checkRole(['base'])) echo 'readonly'; ?>>
                 </div>
 
                 <div class="form-group">
                     <label for="stock_minimo">Stock Mínimo:</label>
-                    <input type="number" id="stock_minimo" name="stock_minimo" class="form-control" step="0.01" required>
+                <input type="number" id="stock_minimo" name="stock_minimo" class="form-control" step="0.01" required <?php if($auth->checkRole(['base'])) echo 'readonly'; ?>>
                 </div>
 
                 <div class="form-group">
                     <label for="id_unidad">Unidad:</label>
-                    <select id="id_unidad" name="id_unidad" class="form-control" required>
+                <select id="id_unidad" name="id_unidad" class="form-control" required <?php if($auth->checkRole(['base'])) echo 'disabled'; ?>>
                         <option value="1">Kilogramos (kg)</option>
                         <option value="2">Litros (L)</option>
                         <option value="3">Unidades (u)</option>
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Crear Producto</button>
+                <!-- Removed gramaje input field -->
+
+                <button type="submit" class="btn btn-primary" <?php if($auth->checkRole(['base'])) echo 'disabled'; ?>>Crear Producto</button>
                 <button type="button" class="btn btn-secondary" onclick="closeModal('createModal')">Cancelar</button>
             </form>
         </div>
@@ -265,29 +279,31 @@ $productosBajoStock = $inventarioController->getProductosBajoStock();
 
                 <div class="form-group">
                     <label for="edit-nombre">Nombre:</label>
-                    <input type="text" id="edit-nombre" name="nombre" class="form-control" required>
+                <input type="text" id="edit-nombre" name="nombre" class="form-control" required <?php if($auth->checkRole(['base'])) echo 'readonly'; ?>>
                 </div>
 
                 <div class="form-group">
                     <label for="edit-stock">Stock:</label>
-                    <input type="number" id="edit-stock" name="stock" class="form-control" step="0.01" required>
+                <input type="number" id="edit-stock" name="stock" class="form-control" step="0.01" required <?php if($auth->checkRole(['base'])) echo 'readonly'; ?>>
                 </div>
 
                 <div class="form-group">
                     <label for="edit-stock_minimo">Stock Mínimo:</label>
-                    <input type="number" id="edit-stock_minimo" name="stock_minimo" class="form-control" step="0.01" required>
+                <input type="number" id="edit-stock_minimo" name="stock_minimo" class="form-control" step="0.01" required <?php if($auth->checkRole(['base'])) echo 'readonly'; ?>>
                 </div>
 
                 <div class="form-group">
                     <label for="edit-id_unidad">Unidad:</label>
-                    <select id="edit-id_unidad" name="id_unidad" class="form-control" required>
+                <select id="edit-id_unidad" name="id_unidad" class="form-control" required <?php if($auth->checkRole(['base'])) echo 'disabled'; ?>>
                         <option value="1">Kilogramos (kg)</option>
                         <option value="2">Litros (L)</option>
                         <option value="3">Unidades (u)</option>
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                <!-- Removed edit gramaje input field -->
+
+                <button type="submit" class="btn btn-primary" <?php if($auth->checkRole(['base'])) echo 'disabled'; ?>>Guardar Cambios</button>
                 <button type="button" class="btn btn-secondary" onclick="closeModal('editModal')">Cancelar</button>
             </form>
         </div>
@@ -314,7 +330,7 @@ $productosBajoStock = $inventarioController->getProductosBajoStock();
                     <input type="number" id="cantidad" name="cantidad" class="form-control" step="0.01" min="0.01" required>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Actualizar Stock</button>
+                <button type="submit" class="btn btn-primary" <?php if($auth->checkRole(['base'])) echo 'disabled'; ?>>Actualizar Stock</button>
                 <button type="button" class="btn btn-secondary" onclick="closeModal('stockModal')">Cancelar</button>
             </form>
         </div>
@@ -349,6 +365,20 @@ $productosBajoStock = $inventarioController->getProductosBajoStock();
                 event.target.style.display = 'none';
             }
         }
+
+        // Real-time search filter
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#productosTable tbody tr');
+            rows.forEach(row => {
+                const productName = row.querySelector('td').textContent.toLowerCase();
+                if (productName.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
     </script>
 </body>
 </html>

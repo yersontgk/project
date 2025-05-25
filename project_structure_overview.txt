@@ -1,0 +1,96 @@
+Detailed Project Structure Overview:
+
+.
+├── .gitignore
+├── eslint.config.js
+├── index.html
+├── index.php
+├── package-lock.json
+├── package.json
+├── postcss.config.js
+├── project_structure_overview.txt
+├── README.md
+├── tailwind.config.js
+├── tsconfig.app.json
+├── tsconfig.json
+├── tsconfig.node.json
+├── vite.config.ts
+├── vite.config.ts.timestamp-1745080016817-6850ef94056578.mjs
+├── assets
+│   ├── css
+│   │   └── style.css
+│   └── js
+│       ├── analisis_datos.js
+│       ├── asistencia.js
+│       ├── gramaje.js
+│       ├── reportes.js
+│       └── sidebar.js
+├── config
+├── controllers
+│   ├── AsistenciaController.php
+│   ├── AuthController.php
+│   ├── ConsumoController.php
+│   ├── gramaje_api.php
+│   ├── GramajeController.php
+│   ├── IngresoController.php
+│   ├── InventarioController.php
+│   ├── MatriculaLimiteController.php
+│   ├── MenuController.php
+│   ├── MenuProductoController.php
+│   ├── PlatosServidosController.php
+│   ├── ReporteController.php
+│   └── UserController.php
+├── models
+│   ├── Asistencia.php
+│   ├── Consumo.php
+│   ├── ConsumoAsistencia.php
+│   ├── ConsumoDetalle.php
+│   ├── Gramaje.php
+│   ├── IngresoDetalle.php
+│   ├── IngresoInsumo.php
+│   ├── Matricula.php
+│   ├── MatriculaLimite.php
+│   ├── Menu.php
+│   ├── MenuProducto.php
+│   ├── PlatosServidos.php
+│   ├── Producto.php
+│   └── Usuario.php
+├── src
+│   ├── App.tsx
+│   ├── index.css
+│   ├── main.tsx
+│   └── vite-env.d.ts
+├── supabase
+│   └── migrations
+│       ├── 20250331210836_broken_star.sql
+│       ├── 20250402020728_snowy_mode.sql
+│       ├── 20250417030248_teal_island.sql
+│       ├── 20250418160426_tender_dream.sql
+│       ├── 20250419120000_add_gramaje_por_plato_to_menu.sql
+│       ├── 20250420034232_young_field.sql
+│       ├── 20250420120000_drop_gramaje_por_plato_from_menu.sql
+│       └── 20250420225334_empty_plain.sql
+└── views
+    ├── analisis_datos.php
+    ├── asistencia.php
+    ├── dashboard.php
+    ├── inventario.php
+    ├── login.php
+    ├── logout.php
+    ├── menu.php
+    ├── reportes.php
+    ├── usuarios.php
+    ├── gramaje
+    │   ├── edit.php
+    │   └── index.php
+    ├── ingreso_insumo
+    │   └── index.php
+    ├── matricula_limite
+    │   └── index.php
+    ├── menu_producto
+    │   ├── edit.php
+    │   └── index.php
+    ├── partials
+    │   └── sidebar.php
+    └── platos_servidos
+        └── index.php

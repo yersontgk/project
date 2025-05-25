@@ -53,43 +53,11 @@ $usuarios = $userController->getAllUsers();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Usuarios - Sistema de Comedor Escolar</title>
     <link rel="stylesheet" href="../assets/css/style.css">
-    <style>
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-        }
-        .modal-content {
-            background-color: white;
-            margin: 15% auto;
-            padding: 20px;
-            border-radius: 5px;
-            width: 80%;
-            max-width: 500px;
-        }
-    </style>
+    <link rel="stylesheet" href="../assets/css/usuarios.css">
 </head>
 <body>
-    <nav class="sidebar">
-        <div class="sidebar-header">
-            <h3>Comedor Escolar</h3>
-        </div>
-        <ul class="sidebar-menu">
-            <li><a href="dashboard.php">Dashboard</a></li>
-            <li><a href="asistencia.php">Asistencia</a></li>
-            <li><a href="menu.php">Menú</a></li>
-            <li><a href="inventario.php">Inventario</a></li>
-            <li><a href="reportes.php">Reportes</a></li>
-            <?php if($auth->checkRole(['admin'])): ?>
-                <li><a href="usuarios.php">Usuarios</a></li>
-            <?php endif; ?>
-            <li><a href="logout.php">Cerrar Sesión</a></li>
-        </ul>
-    </nav>
+    <?php include 'partials/sidebar.php'; ?>
+    <?php include 'partials/navigation_buttons.php'; ?>
 
     <main class="main-content">
         <div class="card">
@@ -209,22 +177,6 @@ $usuarios = $userController->getAllUsers();
         </div>
     </div>
 
-    <script>
-        function showCreateModal() {
-            document.getElementById('createModal').style.display = 'block';
-        }
-
-        function showEditModal(id, nombre_completo, rol, estado) {
-            document.getElementById('edit-id').value = id;
-            document.getElementById('edit-nombre_completo').value = nombre_completo;
-            document.getElementById('edit-rol').value = rol;
-            document.getElementById('edit-estado').checked = estado;
-            document.getElementById('editModal').style.display = 'block';
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-    </script>
+    <script src="../assets/js/usuarios.js"></script>
 </body>
 </html>
