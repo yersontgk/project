@@ -15,8 +15,12 @@ class AsistenciaController {
         $this->matricula = new Matricula($this->db);
     }
 
-    public function getMatriculas($tipo = 'estudiante') {
-        return $this->matricula->readByTipo($tipo);
+    public function getMatriculas($tipo = 'estudiante', $grado = null) {
+        return $this->matricula->readByTipoAndGrado($tipo, $grado);
+    }
+
+    public function getGrados() {
+        return $this->matricula->getGrados();
     }
 
     public function registrarAsistencia($fecha, $asistencias) {
@@ -26,9 +30,22 @@ class AsistenciaController {
                 $this->asistencia->total_masculino = $asistencia['total_masculino'];
                 $this->asistencia->total_femenino = $asistencia['total_femenino'];
                 $this->asistencia->id_matricula = $asistencia['id_matricula'];
-                
-                if (!$this->asistencia->create()) {
-                    throw new Exception("Error al registrar la asistencia");
+
+                // Check if attendance record exists for the date and matricula
+                $stmt = $this->asistencia->readByDateAndMatricula($fecha, $asistencia['id_matricula']);
+                $existingRecord = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if ($existingRecord) {
+                    // Update existing record
+                    $this->asistencia->id_asistencia = $existingRecord['id_asistencia'];
+                    if (!$this->asistencia->update()) {
+                        throw new Exception("Error al actualizar la asistencia");
+                    }
+                } else {
+                    // Create new record
+                    if (!$this->asistencia->create()) {
+                        throw new Exception("Error al registrar la asistencia");
+                    }
                 }
             }
             return true;
@@ -48,9 +65,21 @@ class AsistenciaController {
         return $this->matricula->update();
     }
 
-    public function getFactorGramaje() {
-        // Por ahora retornamos un valor por defecto
-        // En una implementación real, esto vendría de la base de datos
-        return 100;
+    public function registrarPlatos($fecha, $platos_servidos, $platos_devueltos, $observacion, $tipo = 'estudiante', $grado = null) {
+        require_once __DIR__ . '/PlatosServidosController.php';
+        $platosServidosController = new PlatosServidosController();
+        return $platosServidosController->registrarPlatos($fecha, $platos_servidos, $platos_devueltos, $tipo, $grado);
+    }
+
+    public function registrarMatricula($data) {
+        $this->matricula->tipo = $data['tipo'];
+        $this->matricula->grado = $data['grado'] ?? null;
+        $this->matricula->seccion = $data['seccion'] ?? null;
+        $this->matricula->lapso_academico = $data['lapso_academico'] ?? null;
+        $this->matricula->total_masculino = $data['total_masculino'];
+        $this->matricula->total_femenino = $data['total_femenino'];
+        $this->matricula->estado = 1; // activo por defecto
+
+        return $this->matricula->create();
     }
 }
